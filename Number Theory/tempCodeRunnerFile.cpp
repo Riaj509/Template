@@ -1,2 +1,0 @@
-
-typedef long long ll;
