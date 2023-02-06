@@ -175,4 +175,4 @@ int main()
         for (int i = 1; i < n; ++i)
             cout << res[i] << " \n"[i == n - 1];
     }
-}
+} // https://codeforces.com/contest/1790/problem/F
