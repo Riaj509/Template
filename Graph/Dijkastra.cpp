@@ -1,9 +1,24 @@
-/// dijkastra ////////
+#include <bits/stdc++.h>
+
+using namespace std;
+
+typedef long long int ll;
+#define all(a) (a).begin(), (a).end()
+#define rall(a) (a).rbegin(), (a).rend()
+
+/////////////////
+
+const int mx = 1e5 + 10, inf = 1e9 + 7;
+
+vector<pair<ll, ll>> adj[mx];
+ll vis[mx], dis[mx];
+ll n;
+
 void dijkstra(ll x) /// here x denotes source
 {
     for (ll i = 0; i < n; i++)
     {
-        dis[i] = INF;
+        dis[i] = inf;
     }
     priority_queue<pair<ll, ll>> q; //(curr node,distance)
     dis[x] = 0;
@@ -29,31 +44,6 @@ void dijkstra(ll x) /// here x denotes source
         }
     }
 }
-#include <bits/stdc++.h>
-
-using namespace std;
-
-const ll mx = 100;
-vector<ll> adj[mx];
-ll subtr_long_path[mx];
-ll farthest_node[mx];
-
-void dfs(ll u, ll p)
-{
-    farthest_node[u] = u;
-    subtr_long_path[u] = 0;
-    for (auto v : adj[u])
-    {
-        if (v == p)
-            continue;
-        dfs(v, u);
-        if (subtr_long_path[u] < subtr_long_path[v] + 1)
-        {
-            subtr_long_path[u] = subtr_long_path[v] + 1;
-            farthest_node[u] = farthest_node[v];
-        }
-    }
-}
 
 int main()
 {
@@ -63,22 +53,19 @@ int main()
     // cin >> ts;
     while (ts--)
     {
-        ll n, m;
-        cin >> n;
+        ll m, src, des;
+        cin >> n >> src >> des;
 
         for (ll i = 1; i < n; i++)
         {
-            ll u, v;
-            cin >> u >> v;
-            adj[u].push_back(v);
-            adj[v].push_back(u);
+            ll u, v, w;
+            cin >> u >> v >> w;
+            adj[u].push_back({v, w});
+            adj[v].push_back({u, w});
         }
+        dijkstra(src);
 
-        dfs(1, -1);
-        ll one_end = farthest_node[1];
-        dfs(one_end, -1);
-        ll other_end = farthest_node[one_end];
-        cout << subtr_long_path[one_end];
+        cout << dis[des];
 
         cout << "\n";
     }
