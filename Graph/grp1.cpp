@@ -1,34 +1,34 @@
-/// dijkastra////////
-// void dijkstra(ll x)
-// {
-//     for (ll i = 0; i < n; i++)
-//     {
-//         dis[i] = INF;
-//     }
-//     priority_queue<pair<ll, ll>> q; //(curr node,distance)
-//     dis[x] = 0;
-//     q.push({x, 0});
+/// dijkastra ////////
+void dijkstra(ll x) /// here x denotes source
+{
+    for (ll i = 0; i < n; i++)
+    {
+        dis[i] = INF;
+    }
+    priority_queue<pair<ll, ll>> q; //(curr node,distance)
+    dis[x] = 0;
+    q.push({x, 0});
 
-//     while (!q.empty())
-//     {
-//         ll v = q.top().first; // contain current node
-//         q.pop();
-//         if (vis[v] == 0)
-//         { // not visited
-//             vis[v] = 1;
-//             for (auto u : adj[v])
-//             {
-//                 ll a = u.first;  // a = adj.node
-//                 ll b = u.second; // b = adj.distance
-//                 if (dis[v] + b < dis[a])
-//                 {
-//                     dis[a] = dis[v] + b;
-//                     q.push({a, -dis[a]}); // push neg distance for min possible in next node
-//                 }
-//             }
-//         }
-//     }
-// }
+    while (!q.empty())
+    {
+        ll v = q.top().first; // contain current node
+        q.pop();
+        if (vis[v] == 0)
+        { // not visited
+            vis[v] = 1;
+            for (auto u : adj[v])
+            {
+                ll a = u.first;  // a = adj.node
+                ll b = u.second; // b = adj.distance
+                if (dis[v] + b < dis[a])
+                {
+                    dis[a] = dis[v] + b;
+                    q.push({a, -dis[a]}); // push neg distance for min possible in next node
+                }
+            }
+        }
+    }
+}
 #include <bits/stdc++.h>
 
 using namespace std;
