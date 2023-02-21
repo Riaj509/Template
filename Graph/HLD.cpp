@@ -15,15 +15,16 @@ typedef long long int ll;
 #define sz(x) (int)x.size()
 #define mem(a) memset(a, 0, sizeof a)
 #define lower(a, b) lower_bound((a).begin(), (a).end(), b) - (a).begin()
-/////////////////////debug//////////////
 
 //////////////////////////////////////////////////
+
+/* Node as per weight*/
 const int N = 1e5 + 9, LG = 18, inf = 1e9 + 9;
 struct st_lazy
 {
 
     int t[4 * N];
-    int lazy[4 * N]; // set by x
+    int lazy[4 * N];
     st_lazy()
     {
         memset(t, 0, sizeof(t));
