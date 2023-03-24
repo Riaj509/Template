@@ -3,124 +3,92 @@
 //.................................<Bismillahir Rahmanir Rahim>...................................//
 /// Author : Riaj Uddin
 
-#pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
-
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long int ll;
 
 #define all(a) (a).begin(), (a).end()
 #define rall(a) (a).rbegin(), (a).rend()
-#define sz(x) (int)x.size()
+#define sz(x) (ll) x.size()
 #define mem(a) memset(a, 0, sizeof a)
 #define lower(a, b) lower_bound((a).begin(), (a).end(), b) - (a).begin()
 ///////////////////////////////
-struct Seg
+// 1 i w : Change the weight of edge i to  w.
+// 2 u v：Print the distance between vertex u and vertex v.
+const ll N = 2e5 + 123, inf = 1e9 + 9;
+struct st_lazy
 {
-    vector<long long> st, lazy;
-    int n;
 
-    Seg(int n)
+    vector<ll> t, lazy;
+    ll n;
+
+    st_lazy(ll n)
     {
         this->n = n;
-        st.resize(4 * n, 0);
+        t.resize(4 * n, 0);
         lazy.resize(4 * n, 0);
     }
-
-    long long query(int start, int end, int l, int r, int node)
+    void push(ll nod, ll a, ll b)
     {
-        if (lazy[node])
+        if (lazy[nod] == 0)
+            return;
+        t[nod] += (b - a + 1) * lazy[nod];
+        if (a != b)
         {
-            st[node] += (end - start + 1) * lazy[node];
-            if (start != end)
-            {
-                lazy[2 * node + 1] += lazy[node];
-                lazy[2 * node + 2] += lazy[node];
-            }
-            lazy[node] = 0;
+            lazy[2 * nod + 1] += lazy[nod];
+            lazy[2 * nod + 2] += lazy[nod];
+        }
+        lazy[nod] = 0;
+    }
+
+    void update(ll nod, ll a, ll b, ll l, ll r, ll x)
+    {
+        push(nod, a, b);
+        if (r < a || b < l)
+            return;
+        if (l <= a && b <= r)
+        {
+            lazy[nod] += x;
+            push(nod, a, b);
+            return;
         }
 
-        if (l > end or r < start)
-        {
+        ll mid = (a + b) >> 1;
+        update(2 * nod + 1, a, mid, l, min(r, mid), x);
+        update(2 * nod + 2, mid + 1, b, max(l, mid + 1), r, x);
+        t[nod] = (t[2 * nod + 1] + t[2 * nod + 2]);
+    }
+
+    ll query(ll nod, ll a, ll b, ll l, ll r)
+    {
+        push(nod, a, b);
+        if (r < a || b < l)
             return 0;
-        }
 
-        if (l <= start and r >= end)
-        {
-            return st[node];
-        }
+        if (l <= a && b <= r)
+            return t[nod];
 
-        int mid = (start + end) / 2;
-
-        long long q1 = query(start, mid, l, r, node * 2 + 1);
-        long long q2 = query(mid + 1, end, l, r, node * 2 + 2);
-
-        return q1 + q2;
-    }
-
-    long long query(int l, int r)
-    {
-        return query(0, n - 1, l, r, 0);
-    }
-
-    void update(int start, int end, int node, int l, int r, long long val)
-    {
-        if (lazy[node] != 0)
-        {
-            st[node] += lazy[node] * (end - start + 1);
-            if (start != end)
-            {
-                lazy[2 * node + 1] += lazy[node];
-                lazy[2 * node + 2] += lazy[node];
-            }
-            lazy[node] = 0;
-        }
-
-        if (start > r || end < l)
-        {
-            return;
-        }
-        if (start >= l && end <= r)
-        {
-            st[node] += val * (end - start + 1);
-            if (start != end)
-            {
-                lazy[2 * node + 1] += val;
-                lazy[2 * node + 2] += val;
-            }
-            return;
-        }
-
-        int mid = (start + end) / 2;
-        update(start, mid, 2 * node + 1, l, r, val);
-        update(mid + 1, end, 2 * node + 2, l, r, val);
-        st[node] = st[node * 2 + 1] + st[node * 2 + 2];
-    }
-
-    void update(int l, int r, long long x)
-    {
-        update(0, n - 1, 0, l, r, x);
+        ll mid = (a + b) >> 1;
+        return (query(2 * nod + 1, a, mid, l, r) + query(2 * nod + 2, mid + 1, b, l, r));
     }
 };
 
-const int N = 2e5 + 15, M = 19;
+const ll M = 19;
+st_lazy seg(N);
 
-Seg ds(N);
-
-int tme = 1;
-vector<array<int, 3>> g[N];
-int in[N], out[N], to[N], par[N][M], dep[N];
+ll tme = 1, n;
+vector<array<ll, 3>> g[N];
+ll in[N], out[N], to[N], par[N][M], dep[N];
 long long val[N], a[N];
 
-void dfs(int node, int parent)
+void dfs(ll node, ll parent)
 {
     in[node] = tme++;
     dep[node] = dep[parent] + 1;
     val[node] += val[parent];
-    ds.update(in[node], in[node], val[node]);
+    seg.update(0, 0, N - 1, in[node], in[node], val[node]);
     par[node][0] = parent;
-    for (int i = 1; i < M; ++i)
+    for (ll i = 1; i < M; ++i)
     {
         par[node][i] = par[par[node][i - 1]][i - 1];
     }
@@ -137,14 +105,14 @@ void dfs(int node, int parent)
     out[node] = tme;
 }
 
-int lca(int u, int v)
+ll lca(ll u, ll v)
 {
     if (dep[u] < dep[v])
     {
         swap(u, v);
     }
-    int d = dep[u] - dep[v];
-    for (int i = M - 1; i >= 0; --i)
+    ll d = dep[u] - dep[v];
+    for (ll i = M - 1; i >= 0; --i)
     {
         if (d >> i & 1)
         {
@@ -155,7 +123,7 @@ int lca(int u, int v)
     {
         return u;
     }
-    for (int i = M - 1; i >= 0; --i)
+    for (ll i = M - 1; i >= 0; --i)
     {
         if (par[u][i] != par[v][i])
         {
@@ -166,37 +134,40 @@ int lca(int u, int v)
     return par[u][0];
 }
 
-long long dis(int u, int v)
+long long dis(ll u, ll v)
 {
-    int l = lca(u, v);
-    return ds.query(in[u], in[u]) + ds.query(in[v], in[v]) - 2 * ds.query(in[l], in[l]);
+    ll l = lca(u, v);
+    ll x = seg.query(0, 0, N - 1, in[u], in[u]);
+    ll y = seg.query(0, 0, N - 1, in[v], in[v]);
+    ll z = 2 * seg.query(0, 0, N - 1, in[l], in[l]);
+    return (x + y - z);
 }
 
 int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(0);
-    int n;
+
     cin >> n;
-    for (int i = 1; i <= n - 1; ++i)
+    for (ll i = 1; i <= n - 1; ++i)
     {
-        int x, y, w;
+        ll x, y, w;
         cin >> x >> y >> w;
         g[x].push_back({y, w, i});
         g[y].push_back({x, w, i});
     }
     dfs(1, 0);
-    int q;
+    ll q;
     cin >> q;
     while (q--)
     {
-        int t, x, y;
+        ll t, x, y;
         cin >> t >> x >> y;
         if (t == 1)
         {
-            int node = to[x];
+            ll node = to[x];
             long long delta = y - a[node];
-            ds.update(in[node], out[node] - 1, delta);
+            seg.update(0, 0, N - 1, in[node], out[node] - 1, delta);
             a[node] = y;
         }
         else
