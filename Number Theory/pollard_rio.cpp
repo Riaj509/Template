@@ -1,161 +1,306 @@
+//....................................<In the name of a1lah>...............................//
+
+//.................................<Bismillahir Rahmanir Rahim>...................................//
+// Author : Riaj Uddin
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long int ll;
 
-const ll MOD = (1LL << 31) - 1;
-const ll LIM = 1e9;
 typedef long long ll;
-ll bigmodMul(ll a, ll b, ll m = MOD) /// O(log n)
+typedef vector<ll> vl;
+
+typedef pair<ll, ll> pii;
+typedef pair<double, double> pdd;
+typedef vector<pii> vii;
+typedef double dl;
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace __gnu_pbds;
+
+typedef tree<long long, null_type, less<long long>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+#define lower(a, b) lower_bound((a).begin(), (a).end(), b) - (a).begin()
+#define mem(a, b) memset(a, b, sizeof(a));
+#define sz1 cout << endl;
+#define pb push_back
+#define all(a) (a).begin(), (a).end()
+#define rall(a) (a).rbegin(), (a).rend()
+
+#define fraction(a)               \
+    cout.unsetf(ios::floatfield); \
+    cout.precision(a);            \
+    cout.setf(ios::fined, ios::floatfield);
+
+//////////////////////////////-------->
+template <typename F, typename S>
+ostream &operator<<(ostream &os, const pair<F, S> &p)
 {
-    ll res = 0;
-    for (a %= m, b %= m; b > 0; a <<= 1, b >>= 1)
+    return os << "(" << p.first << ", " << p.second << ")";
+}
+
+template <typename T>
+ostream &operator<<(ostream &os, const vector<T> &v)
+{
+    os << "{";
+    for (auto it = v.begin(); it != v.end(); ++it)
     {
-        if (a >= m)
-            a -= m;
-        if (b & 1)
-        {
-            res += a;
-            if (res >= m)
-                res -= m;
-        }
+        if (it != v.begin())
+            os << ", ";
+        os << *it;
     }
-
-    return res;
-}
-ll bigmodPow(ll x, ll n, ll m = MOD) /// O(log^2(n))
-{
-    ll res = 1;
-    for (x %= m; n > 0; x = bigmodMul(x, x, m), n >>= 1)
-        if (n & 1)
-            res = bigmodMul(res, x, m);
-
-    return res;
+    return os << "}";
 }
 
-ll pw(ll x, ll n) /// O(log n)
+template <typename T>
+ostream &operator<<(ostream &os, const set<T> &v)
 {
-    ll res = 1;
-    for (; n > 0; x = x * x, n >>= 1)
-        if (n & 1)
-            res = res * x;
-
-    return res;
+    os << "[";
+    for (auto it = v.begin(); it != v.end(); ++it)
+    {
+        if (it != v.begin())
+            os << ", ";
+        os << *it;
+    }
+    return os << "]";
 }
 
-bool isPrime(ll p) /// O(log^5(p)) - O(log p) rounds performed - O(log^2(p)) primality tests - O(log^2(p)) calculation
+template <typename T>
+ostream &operator<<(ostream &os, const multiset<T> &v)
 {
-    if (p < 2)
-        return false;
-    if (p < 4)
+    os << "[";
+    for (auto it = v.begin(); it != v.end(); ++it)
+    {
+        if (it != v.begin())
+            os << ", ";
+        os << *it;
+    }
+    return os << "]";
+}
+
+template <typename F, typename S>
+ostream &operator<<(ostream &os, const map<F, S> &v)
+{
+    os << "[";
+    for (auto it = v.begin(); it != v.end(); ++it)
+    {
+        if (it != v.begin())
+            os << ", ";
+        os << it->first << " = " << it->second;
+    }
+    return os << "]";
+}
+
+#define dbg(args...)            \
+    do                          \
+    {                           \
+        cerr << #args << " : "; \
+        fa1tu(args);            \
+    } while (0)
+
+void fa1tu()
+{
+    cerr << endl;
+}
+
+template <typename T>
+void fa1tu(T a[], ll n)
+{
+    for (ll i = 0; i < n; ++i)
+        cerr << a[i] << ' ';
+    cerr << endl;
+}
+
+template <typename T, typename... hello>
+void fa1tu(T arg, const hello &...rest)
+{
+    cerr << arg << ' ';
+    fa1tu(rest...);
+}
+//////////////////////////////-------->
+
+bool isKthBitSet(ll n, ll k)
+{
+    if (n & (1 << (k - 1)))
         return true;
-    if (p % 2 == 0 || p % 3 == 0)
+    return false;
+}
+bool poweroftwo(ll k) // domplexity O(1)
+{
+    return k && (!(k & (k - 1)));
+}
+bool powerofthree(ll n) // domplexity O(1)
+{
+    if (n <= 0)
         return false;
-
-    ll q = p - 1;
-    ll k = 0;
-    while ((q & 1) == 0) /// O(log p)
-        q >>= 1, k++;
-
-    ll a = rand() % (p - 4) + 2;
-    ll t = bigmodPow(a, q, p); /// O(log^2(q))
-
-    bool ok = (t == 1) || (t == p - 1);
-    for (ll i = 1; i <= k && !ok; i++)
-    {                           /// O(log k * log t)
-        t = bigmodMul(t, t, p); /// O(log t)
-        ok = (t == p - 1);
-    }
-
-    return ok;
+    return 1162261467 % n == 0;
 }
 
-map<ll, ll> M;
-ll sqrtn;
-ll sum = 0;
-
-vector<ll> prime; /// List of prime numbers
-vector<ll> lpf;   /// lpf[x] = Lowest_Prime_Factor of x
-
-void sieve(ll lim = LIM) /// O(n)
+////////powMod---cuxom//////
+ll power(ll x, ll y, ll p)
 {
-    prime.assign(1, 2);
-    lpf.assign(lim + 1, 2); /// O(n)
+    ll res = 1;
 
-    for (ll i = 3; i <= lim; i += 2) /// O(n)
+    x = x % p;
+
+    while (y > 0)
     {
-        if (lpf[i] == 2)
-            prime.push_back(lpf[i] = i);
-        for (ll j = 0; j < lpf.size() && prime[j] <= lpf[i] && prime[j] * i <= lim; ++j)
-            lpf[prime[j] * i] = prime[j];
-    }
-}
 
-ll rho(ll n, ll c)
-{ /// O(√(√(n)) * polylog n)
-    ll x = 2, y = 2, i = 2, k = 2, d;
-    while (true)
+        if (y & 1)
+            res = (res * x) % p;
+
+        y = y >> 1;
+        x = (x * x) % p;
+    }
+    return res;
+}
+//////////////////////////////
+namespace PollardRho
+{
+    mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
+    const int P = 1e6 + 9;
+    ll seq[P];
+    int primes[P], spf[P];
+    inline ll add_mod(ll x, ll y, ll m)
     {
-        x = (bigmodMul(x, x, n) + c); /// O(log n)
-        if (x >= n)
-            x -= n;
-        d = __gcd(abs(x - y), n); /// O(log n)
-        if (d > 1)
-            return d;
-        if (i++ == k)
-            y = x, k <<= 1;
+        return (x += y) < m ? x : x - m;
     }
-    return n;
-}
-
-void big_fact(ll n)
-{               /// O(√(√(n)) * polylog n)
-    if (n == 1) /// O(1)
-        return;
-
-    if (n < 1e+9)
-    {                      /// O(√(n) / ln(√(n)) * log n / log log n)
-        for (ll p : prime) /// O(pair<ll, ll>(√(n)) * log(M.size)) = O(√(n) / ln(√(n)) * log n / log(log n))
+    inline ll mul_mod(ll x, ll y, ll m)
+    {
+        ll res = x * y % m;
+        return res;
+        // ll res = x * y - (ll)((long double)x * y / m + 0.5) * m;
+        // return res < 0 ? res + m : res;
+    }
+    inline ll pow_mod(ll x, ll n, ll m)
+    {
+        ll res = 1 % m;
+        for (; n; n >>= 1)
         {
-            if (p > sqrtn)
-                break;
-            while (n % p == 0)
-                M[p]++, n /= p; /// O(log_p(n) * log(M.size)) = O(log_p(n) * log(n) / log(log n))
+            if (n & 1)
+                res = mul_mod(res, x, m);
+            x = mul_mod(x, x, m);
         }
-
-        if (n > 1)
-            M[n]++; /// O(log(M.size)) = O(log n / log(log n))
-        return;
+        return res;
     }
-
-    if (isPrime(n))            /// O(log^5(n))
-        return M[n]++, void(); /// O(log(M.size)) = O(log n / log(log n))
-
-    ll d = n;
-    for (ll i = 2; d == n; i++) /// O(√(√(n)) * polylog n)
-        d = rho(n, i);          /// O(√(√(n)) * polylog n)
-
-    big_fact(d);
-    big_fact(n / d);
+    // O(it * (logn)^3), it = number of rounds performed
+    inline bool miller_rabin(ll n)
+    {
+        if (n <= 2 || (n & 1 ^ 1))
+            return (n == 2);
+        if (n < P)
+            return spf[n] == n;
+        ll c, d, s = 0, r = n - 1;
+        for (; !(r & 1); r >>= 1, s++)
+        {
+        }
+        // each iteration is a round
+        for (int i = 0; primes[i] < n && primes[i] < 32; i++)
+        {
+            c = pow_mod(primes[i], r, n);
+            for (int j = 0; j < s; j++)
+            {
+                d = mul_mod(c, c, n);
+                if (d == 1 && c != 1 && c != (n - 1))
+                    return false;
+                c = d;
+            }
+            if (c != 1)
+                return false;
+        }
+        return true;
+    }
+    void init()
+    {
+        int cnt = 0;
+        for (int i = 2; i < P; i++)
+        {
+            if (!spf[i])
+                primes[cnt++] = spf[i] = i;
+            for (int j = 0, k; (k = i * primes[j]) < P; j++)
+            {
+                spf[k] = primes[j];
+                if (spf[i] == spf[k])
+                    break;
+            }
+        }
+    }
+    // returns O(n^(1/4))
+    ll pollard_rho(ll n)
+    {
+        while (1)
+        {
+            ll x = rnd() % n, y = x, c = rnd() % n, u = 1, v, t = 0;
+            ll *px = seq, *py = seq;
+            while (1)
+            {
+                *py++ = y = add_mod(mul_mod(y, y, n), c, n);
+                *py++ = y = add_mod(mul_mod(y, y, n), c, n);
+                if ((x = *px++) == y)
+                    break;
+                v = u;
+                u = mul_mod(u, abs(y - x), n);
+                if (!u)
+                    return __gcd(v, n);
+                if (++t == 32)
+                {
+                    t = 0;
+                    if ((u = __gcd(u, n)) > 1 && u < n)
+                        return u;
+                }
+            }
+            if (t && (u = __gcd(u, n)) > 1 && u < n)
+                return u;
+        }
+    }
+    vector<ll> factorize(ll n)
+    {
+        if (n == 1)
+            return vector<ll>();
+        if (miller_rabin(n))
+            return vector<ll>{n};
+        vector<ll> v, w;
+        while (n > 1 && n < P)
+        {
+            v.push_back(spf[n]);
+            n /= spf[n];
+        }
+        if (n >= P)
+        {
+            ll x = pollard_rho(n);
+            v = factorize(x);
+            w = factorize(n / x);
+            v.insert(v.end(), w.begin(), w.end());
+        }
+        return v;
+    }
 }
-
-int main() /// O(√n + √(√(n)) * polylog n)
+int main()
 {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    PollardRho::init();
+    ll tc = 1,
+       p = 0;
+    cin >> tc;
+    while (tc--)
+    {
+        ll a, b, k;
+        cin >> a >> b >> k;
+        if (k == 1)
+        {
+            if ((a % b == 0 || b % a == 0) && a != b)
+                cout << "YES\n";
+            else
+                cout << "NO\n";
+            continue;
+        }
+        auto x = PollardRho::factorize(a);
+        auto y = PollardRho::factorize(b);
+        if (x.size() + y.size() >= k)
+            cout << "YES";
+        else
+            cout << "NO";
 
-    ll n;
-    cin >> n;
-
-    sqrtn = sqrt(n); /// O(√(n))
-    sieve(sqrtn);    /// O(√(n))
-
-    srand(time(NULL));
-    big_fact(n); /// O(√(√(n)) * polylog n)
-
-    ll sum = 1;
-    /// n = ∏(e ∈ M){ e.first ^ e.second }
-    /// sum = ∏(divisor prime e.first){ e.first ^ (e.second + 1) - 1) / (e.first - 1) }
-    for (pair<ll, ll> e : M)                                    /// O(log n / log(log n))
-        sum *= (pw(e.first, e.second + 1) - 1) / (e.first - 1); /// O(log n)
-
-    cout << sum;
-    return 0;
-}
+        cout << "\n";
+    }
+} // https://codeforces.com/contest/1538/problem/D
