@@ -126,25 +126,14 @@ void faltu(T arg, const hello &...rest)
     faltu(rest...);
 }
 
-//////////////////////////////-------->
-
-bool isKthBitSet(int n, int k)
-{
-    if (n & (1 << (k - 1)))
-        return true;
-    return false;
-}
-bool poweroftwo(int k) // complexity O(1)
-{
-    return k && (!(k & (k - 1)));
-}
-bool powerofthree(int n) // complexity O(1)
-{
-    if (n <= 0)
-        return false;
-    return 1162261467 % n == 0;
-}
-
+///////////bit-manipulation///////////////
+#define MSB(mask) 63 - __builtin_clzll(mask)
+#define LSB(mask) __builtin_ctzll(mask)
+#define ONE(mask) __builtin_popcountll(mask)
+#define CHECK(mask, bit) (mask & (1LL << bit))
+#define ON(mask, bit) (mask | (1LL << bit))
+#define OFF(mask, bit) (mask & ~(1LL << bit))
+#define CHANGE(mask, bit) (mask ^ (1LL << bit))
 ////////powMod---custom//////
 ll power(ll x, ll y, ll p)
 {
