@@ -1,77 +1,107 @@
+//....................................<In the name of Allah>...............................//
+
+//.................................<Bismillahir Rahmanir Rahim>...................................//
+/// Author : Riaj Uddin
+
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long int ll;
+typedef long long ll;
 
-struct Node
+#define all(a) (a).begin(), (a).end()
+#define rall(a) (a).rbegin(), (a).rend()
+#define sz(x) (ll) x.size()
+#define mem(a, b) memset(a, b, sizeof a)
+#define lower(a, b) lower_bound((a).begin(), (a).end(), b) - (a).begin()
+#define eps 1e-10
+/////////////////
+
+/////////////////////////
+struct trie
 {
-
-    Node *link[10];
-    bool ends = false;
-
-    bool containsKey(int ch)
+    trie *next[26];
+    bool is;
+    trie()
     {
-        return (link[ch] != NULL);
+        is = false;
+        for (int i = 0; i < 26; ++i)
+            next[i] = NULL;
     }
-    void put(int ch, Node *n)
-    {
-        link[ch] = n;
-    }
-    Node *get(int c)
-    {
-        return link[c];
-    }
-    void setEnd() { ends = true; }
 
-    bool isEnd() { return ends; }
-};
+} *root;
 
-class Trie
+struct tree
 {
-public:
-    Node *head;
-    Trie()
+    void insert(string &s)
     {
-        head = new Node();
-    }
-
-    void insert(vector<int> word)
-    {
-        Node *node = head;
-
-        for (int i = 0; i < word.size(); i++)
+        trie *cur = root;
+        for (int i = 0; i < s.size(); ++i)
         {
-            if (!node->containsKey(word[i]))
-            {
-                Node *newnode = new Node();
-                node->put(word[i], newnode);
-            }
-            node = node->get(word[i]);
+            int ch = s[i] - 'a';
+            if (cur->next[ch] == NULL)
+                cur->next[ch] = new trie();
+            cur = cur->next[ch];
         }
-        node->setEnd();
+        cur->is = true;
     }
 
-    int search(vector<int> word)
+    bool check(string &s)
     {
-
-        int ans = 0;
-        Node *node = head;
-        for (int i = 0; i < word.size(); i++)
+        trie *cur = root;
+        for (int i = 0; i < s.size(); ++i)
         {
-            if (!node->containsKey(word[i]))
-                return ans;
-            ans++;
-
-            node = node->get(word[i]);
+            int ch = s[i] - 'a';
+            if (cur->next[ch] == NULL)
+                return false;
+            cur = cur->next[ch];
         }
-        return ans;
+        return cur->is;
     }
-};
+    void dlt(trie *cur)
+    {
+        if (cur == NULL)
+            return;
+        for (int i = 0; i < 26; ++i)
+        {
+            dlt(cur->next[i]);
+        }
+        delete cur;
+    }
+} tr;
 
 int main()
 {
-    vector<int> x;
-    Trie *trie = new Trie(); // initialize
-    trie->insert(x);         ////insert vector of x
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    ll tc = 1;
 
-    trie->search(x); /////search in vector of x
+    cin >> tc;
+    while (tc--)
+    {
+        ll n;
+        cin >> n;
+        root = new trie();
+        for (int i = 0; i < n; ++i)
+        {
+            string s;
+            cin >> s;
+            tr.insert(s);
+        }
+        ll q;
+        cin >> q;
+        while (q--)
+        {
+            string p;
+            cin >> p;
+            if (tr.check(p))
+                cout << "YES";
+            else
+                cout << "NO";
+            cout << "\n";
+        }
+        tr.dlt(root);
+
+        cout << "\n";
+    }
+
+    return 0;
 }
