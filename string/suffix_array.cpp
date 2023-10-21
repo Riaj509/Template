@@ -1,8 +1,3 @@
-//....................................<In the name of Along long intah>...............................//
-
-//.................................<Bismilong long intahir Rahmanir Rahim>...................................//
-/// Auth|| : Riaj Uddin
-
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long int ll;
