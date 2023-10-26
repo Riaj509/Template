@@ -40,63 +40,114 @@ typedef map<ll, ll> mp;
     cout.precision(a);            \
     cout.setf(ios::fined, ios::floatfield);
 //////////////////////////////Debug part////////////////////////////////////
-
 template <typename F, typename S>
-ostream &operator<<(ostream &os, const pair<F, S> &p)
-{
-    return os << "(" << p.first << ", " << p.second << ")";
-}
+void faltu(pair<F, S> p) { cerr << "(" << p.first << ", " << p.second << ")"; }
 
 template <typename T>
-ostream &operator<<(ostream &os, const vector<T> &v)
+void faltu(vector<T> v)
 {
-    os << "{";
+    cerr << "{";
     for (auto it = v.begin(); it != v.end(); ++it)
     {
         if (it != v.begin())
-            os << ", ";
-        os << *it;
+            cerr << ", ";
+        cerr << *it;
     }
-    return os << "}";
+    cerr << "}";
 }
 
 template <typename T>
-ostream &operator<<(ostream &os, const set<T> &v)
+void faltu(set<T> v)
 {
-    os << "[";
+    cerr << "{";
     for (auto it = v.begin(); it != v.end(); ++it)
     {
         if (it != v.begin())
-            os << ", ";
-        os << *it;
+            cerr << ", ";
+        cerr << *it;
     }
-    return os << "]";
+    cerr << "}";
 }
 
 template <typename T>
-ostream &operator<<(ostream &os, const multiset<T> &v)
+void faltu(multiset<T> v)
 {
-    os << "[";
+    cerr << "{";
     for (auto it = v.begin(); it != v.end(); ++it)
     {
         if (it != v.begin())
-            os << ", ";
-        os << *it;
+            cerr << ", ";
+        cerr << *it;
     }
-    return os << "]";
+    cerr << "}";
 }
 
 template <typename F, typename S>
-ostream &operator<<(ostream &os, const map<F, S> &v)
+void faltu(map<F, S> v)
 {
-    os << "[";
+    cerr << "[";
     for (auto it = v.begin(); it != v.end(); ++it)
     {
         if (it != v.begin())
-            os << ", ";
-        os << it->first << " = " << it->second;
+            cerr << ", ";
+        cerr << it->first << " = " << it->second;
     }
-    return os << "]";
+    cerr << "]";
+}
+
+template <typename F, typename S>
+void faltu(unordered_map<F, S> v)
+{
+    cerr << "[";
+    for (auto it = v.begin(); it != v.end(); ++it)
+    {
+        if (it != v.begin())
+            cerr << ", ";
+        cerr << it->first << " = " << it->second;
+    }
+    cerr << "]";
+}
+
+template <typename T>
+void faltu(stack<T> v)
+{
+    cerr << "{";
+    while (!v.empty())
+    {
+        cerr << v.top();
+        v.pop();
+        if (!v.empty())
+            cerr << ", ";
+    }
+    cerr << "}";
+}
+
+template <typename T>
+void faltu(queue<T> v)
+{
+    cerr << "{";
+    while (!v.empty())
+    {
+        cerr << v.front();
+        v.pop();
+        if (!v.empty())
+            cerr << ", ";
+    }
+    cerr << "}";
+}
+
+template <typename T>
+void faltu(priority_queue<T> v)
+{
+    cerr << "{";
+    while (!v.empty())
+    {
+        cerr << v.front();
+        v.pop();
+        if (!v.empty())
+            cerr << ", ";
+    }
+    cerr << "}";
 }
 
 #define dbg(args...)            \
@@ -106,15 +157,12 @@ ostream &operator<<(ostream &os, const map<F, S> &v)
         faltu(args);            \
     } while (0)
 
-void faltu()
-{
-    cerr << endl;
-}
+void faltu() { cerr << endl; }
 
 template <typename T>
-void faltu(T a[], ll n)
+void faltu(T a[], int n)
 {
-    for (ll i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i)
         cerr << a[i] << ' ';
     cerr << endl;
 }
