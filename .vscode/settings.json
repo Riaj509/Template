@@ -76,5 +76,9 @@
         ]
     },
     "editor.suggest.snippetsPreventQuickSuggestions": false,
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "files.associations": {
+        "*.html": "html",
+        "iostream": "cpp"
+    }
 }
